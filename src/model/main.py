@@ -53,10 +53,10 @@ if __name__ == "__main__":
 
     import train
 
-    args.patch_size[0] = args.img_dim // 2
-    args.patch_size[1] = args.img_dim // 2
+    # args.patch_size[0] = args.img_dim // 2
+    # args.patch_size[1] = args.img_dim // 2
 
-    print("PATCH SIZE: ", args.patch_size[0])
+    # print("PATCH SIZE: ", args.patch_size[0])
 
     # Set default params
     d_params = {"dset": args.dset,
