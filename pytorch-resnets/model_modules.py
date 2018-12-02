@@ -117,6 +117,76 @@ class Generator(nn.Module):
         final = nn.Tanh()(decode8)
         return final
 
+class GeneratorUResNet(nn.Module):
+    def __init__(self, in_channels = 3, out_channels = 3, bias = False, dropout_prob = 0.5, norm = 'batch'):
+        super(GeneratorUResNet, self).__init__()
+
+        
+        # encoder section
+        self.encoder1 = EncoderBlock(in_channels, 64, bias = bias, do_norm = False, do_activation = False)
+        self.encoder2 = EncoderBlock(64, 128, bias = bias, norm = norm)
+        self.encoder3 = EncoderBlock(128, 256, bias = bias, norm = norm)
+        self.encoder4 = EncoderBlock(256, 256, bias = bias, do_norm = False)
+
+        # resnet blocks
+        self.resnet1 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet2 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet3 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet4 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet5 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet6 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+
+        # decoder section
+        self.decoder1 = DecoderBlock(512, 256, bias = bias, norm = norm)
+        self.decoder2 = DecoderBlock(512, 128, bias = bias, norm = norm)
+        self.decoder3 = DecoderBlock(256, 64, bias = bias, norm = norm)
+        self.decoder4 = DecoderBlock(128, out_channels, bias = bias, do_norm = False)
+
+    def forward(self, x):
+
+        
+        e1 = self.encoder1(x)
+        e2 = self.encoder2(e1)
+        e3 = self.encoder3(e2)
+        e4 = self.encoder4(e3)
+
+        r1 = self.resnet1(e4)
+        r2 = self.resnet2(r1)
+        r3 = self.resnet3(r2)
+        r4 = self.resnet4(r3)
+        r5 = self.resnet5(r4)
+        r6 = self.resnet6(r5)
+
+        #d1 = self.decoder1(r6)
+        #d2 = torch.cat([self.decoder2(d1), e3], 1)
+        #d3 = torch.cat([self.deocder3(d2), e2], 1)
+        #d4 = torch.cat([self.decoder4(d3), e1], 1)
+        #r2 = torch.cat([self.resnet2(r1), e3], 1)
+        #r3 = torch.cat([self.resnet3(r2), r1], 1)
+        #r4 = torch.cat([self.resnet4(r3), r2], 1)
+        #r5 = torch.cat([self.resnet5(r4), r3], 1)
+        #r6 = torch.cat([self.resnet6(r5), r4], 1)
+
+        #d1 = torch.cat([self.decoder1(r6), e4], 1)
+        #d2 = torch.cat([self.decoder2(d1), e3], 1)
+        #d3 = torch.cat([self.decoder3(d2), e2], 1)
+        #d4 = self.decoder4(d3)
+
+        cat1 = torch.cat([r6, e4], 1)
+        d1 = self.decoder1(cat1)
+        cat2 = torch.cat([d1, e3], 1)
+        d2 = self.decoder2(cat2)
+        cat3 = torch.cat([d2, e2], 1)
+        d3 = self.decoder3(cat3)
+        cat4 = torch.cat([d3, e1], 1)
+        d4 = self.decoder4(cat4)
+
+        final = nn.Tanh()(d4)
+
+        return final
+        
+
+
 #############################################################
 # patchGAN
 #############################################################
@@ -354,8 +424,8 @@ class GeneratorJohnson2(nn.Module):
             model += [nn.Conv2d(in_channels, out_channels, 3, stride=2, padding=1),
                       norm_layer(out_channels),
                       nn.ReLU(inplace=True)]
-            in_channels = out_channels
-            out_channels = in_channels * 2
+            in_channels = out_channels # 128, 256
+            out_channels = in_channels * 2 # 256, 512
 
         # Residual blocks
         for i in range(n_res_blocks):
@@ -379,6 +449,61 @@ class GeneratorJohnson2(nn.Module):
 
     def forward(self, input):
         return self.model(input)
+
+'''
+class GeneratorUResnet(nn.Module):
+    def __init__(self, image_channel = 3, norm = 'instancenorm', n_res_blocks = 9):
+        super(GeneratorUResnet, self).__init__()
+
+        if norm == 'batchnorm':
+            norm_layer = nn.BatchNorm2d
+        elif norm == 'instancenorm':
+            norm_layer = nn.InstanceNorm2d
+        else:
+            raise Exception('Unspecified norm')
+
+        # downsampling
+        model = [
+                nn.ReflectionPad2d(3),
+                nn.Conv2d(image_channel, 64, 7),
+                norm_layer(64),
+                nn.ReLU(inplace=True)
+        ]
+
+        in_channels = 64
+        out_channels = in_channels * 2
+
+        # 256 -> 128 -> 64
+        for i in range(3):
+            model += [nn.Conv2d(in_channels, out_channels, 3, stride = 2, padding = 1), 
+                      norm_layer(out_channels), 
+                      nn.ReLU(inplace = True)]
+
+        # resnet blocks
+        for i in range(n_res_blocks):
+            model += [ResidualBlock2(in_channels, norm_layer = norm_layer)]
+
+        # upsampling
+        out_channels = in_channels // 2
+
+        for i in range(3):
+            model += [nn.ConvTranspose2d(in_channels, out_channels, 3, stride = 2, padding = 1, output_padding = 1), 
+                      norm_layer(out_channels), 
+                      nn.ReLU(inplace = True)]
+
+            in_channels = out_channels
+            out_channels = in_channels // 2
+
+        model += [nn.ReflectionPad2d(3), 
+                  nn.Conv2d(64, 3, 7), 
+                  nn.Tanh()]
+
+        self.model = nn.Sequential(*model)
+
+    def forward(self, input):
+        return self.model(input)
+
+'''
 
 #############################################################
 # resnet50

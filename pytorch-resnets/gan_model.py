@@ -15,6 +15,8 @@ class GANModel:
         # Code (paper): G_A (G), G_B (F), D_A (D_Y), D_B (D_X)
         if args.G == 'unet':
             self.G = Generator(bias=args.bias, norm=args.norm, dropout_prob=args.dropout)
+        elif args.G == 'uresnet':
+            self.G = GeneratorUResNet(bias = args.bias, norm = args.norm)
         elif args.G == 'resnet6':
             self.G = GeneratorJohnson(bias=args.bias, norm=args.norm)
         elif args.G == 'resnet9':
