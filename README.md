@@ -8,7 +8,7 @@ chosen resulting in patches of size greater than 70 pixels.
 Code for the pytorch version is mainly adapted from https://github.com/yuzhoucw/230pix2pix which tackles a similar problem as ours, and 
 includes their own proposed method. I used this as a baseline since it had many of the auxiliary functions (plotting, model selection with 
 multiple models, etc.) and had many models to benchmark our own models on. Among the many models in gan_model and model_modules is 
-UResNet, which is my own model adapted that takes inspiration from their approach of using ResNets as an intermediary bottleneck layer.
+UResNet, which is my own model that takes inspiration from their approach of using ResNets as an intermediary bottleneck layer.
 
 
 ## Training time comparisons
