@@ -3,7 +3,8 @@
 ## Baseline code and acknowledgements
 Code for the keras version (mostly untouched) is adapted from https://github.com/tdeboissiere/DeepLearningImplementations/tree/master/pix2pix.
 This version was only used to test the effect of scaling patches with image size, which obviously improved training time if the number of "sections"
-chosen resulting in patches of size greater than 70 pixels.
+chosen resulted in patches of size greater than 70 pixels. Interestingly, although the authors insisted that patch sizes of 70 were best, 
+the model trained faster and just as well with an effective patch size of 128 (number of sections was 4, and 256 / 2 = 128).
 
 Code for the pytorch version is mainly adapted from https://github.com/yuzhoucw/230pix2pix which tackles a similar problem as ours, and 
 includes their own proposed method. I used this as a baseline since it had many of the auxiliary functions (plotting, model selection with 
