@@ -15,4 +15,5 @@ UResNet, which is my own model that takes inspiration from their approach of usi
 
 ### pytorch version (on 100 epochs)
 original (230pix2pix with resnet9): 27744 seconds or 7.7 hours (~ 4.15 minutes per epoch)
+
 UResNet (U-net and resnet6 hybrid): 13819 seconds or 3.8 hours (~ 1.98 minutes per epoch)
