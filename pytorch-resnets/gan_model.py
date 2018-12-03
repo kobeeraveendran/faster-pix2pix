@@ -17,6 +17,8 @@ class GANModel:
             self.G = Generator(bias=args.bias, norm=args.norm, dropout_prob=args.dropout)
         elif args.G == 'uresnet':
             self.G = GeneratorUResNet(bias = args.bias, norm = args.norm)
+        elif args.G == 'uresnet9':
+            self.G = GeneratorUResNet9(bias = args.bias, norm = args.norm)
         elif args.G == 'resnet6':
             self.G = GeneratorJohnson(bias=args.bias, norm=args.norm)
         elif args.G == 'resnet9':

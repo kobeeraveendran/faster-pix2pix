@@ -184,7 +184,66 @@ class GeneratorUResNet(nn.Module):
         final = nn.Tanh()(d4)
 
         return final
+
+class GeneratorUResNet9(nn.Module):
+    
+    def __init__(self, in_channels = 3, out_channels = 3, bias = False, dropout_prob = 0.5, norm = 'batch'):
+        super(GeneratorUResNet9, self).__init__()
+
         
+        # encoder section
+        self.encoder1 = EncoderBlock(in_channels, 64, bias = bias, do_norm = False, do_activation = False)
+        self.encoder2 = EncoderBlock(64, 128, bias = bias, norm = norm)
+        self.encoder3 = EncoderBlock(128, 256, bias = bias, norm = norm)
+        self.encoder4 = EncoderBlock(256, 256, bias = bias, do_norm = False)
+
+        # resnet blocks
+        self.resnet1 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet2 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet3 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet4 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet5 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet6 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet7 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet8 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+        self.resnet9 = ResidualLayer(256, (3, 3), final_relu = False, bias = bias)
+
+        # decoder section
+        self.decoder1 = DecoderBlock(512, 256, bias = bias, norm = norm)
+        self.decoder2 = DecoderBlock(512, 128, bias = bias, norm = norm)
+        self.decoder3 = DecoderBlock(256, 64, bias = bias, norm = norm)
+        self.decoder4 = DecoderBlock(128, out_channels, bias = bias, do_norm = False)
+
+    def forward(self, x):
+
+        
+        e1 = self.encoder1(x)
+        e2 = self.encoder2(e1)
+        e3 = self.encoder3(e2)
+        e4 = self.encoder4(e3)
+
+        r1 = self.resnet1(e4)
+        r2 = self.resnet2(r1)
+        r3 = self.resnet3(r2)
+        r4 = self.resnet4(r3)
+        r5 = self.resnet5(r4)
+        r6 = self.resnet6(r5)
+        r7 = self.resnet7(r6)
+        r8 = self.resnet8(r7)
+        r9 = self.resnet9(r8)
+
+        cat1 = torch.cat([r9, e4], 1)
+        d1 = self.decoder1(cat1)
+        cat2 = torch.cat([d1, e3], 1)
+        d2 = self.decoder2(cat2)
+        cat3 = torch.cat([d2, e2], 1)
+        d3 = self.decoder3(cat3)
+        cat4 = torch.cat([d3, e1], 1)
+        d4 = self.decoder4(cat4)
+
+        final = nn.Tanh()(d4)
+
+        return final
 
 
 #############################################################
