@@ -157,21 +157,6 @@ class GeneratorUResNet(nn.Module):
         r5 = self.resnet5(r4)
         r6 = self.resnet6(r5)
 
-        #d1 = self.decoder1(r6)
-        #d2 = torch.cat([self.decoder2(d1), e3], 1)
-        #d3 = torch.cat([self.deocder3(d2), e2], 1)
-        #d4 = torch.cat([self.decoder4(d3), e1], 1)
-        #r2 = torch.cat([self.resnet2(r1), e3], 1)
-        #r3 = torch.cat([self.resnet3(r2), r1], 1)
-        #r4 = torch.cat([self.resnet4(r3), r2], 1)
-        #r5 = torch.cat([self.resnet5(r4), r3], 1)
-        #r6 = torch.cat([self.resnet6(r5), r4], 1)
-
-        #d1 = torch.cat([self.decoder1(r6), e4], 1)
-        #d2 = torch.cat([self.decoder2(d1), e3], 1)
-        #d3 = torch.cat([self.decoder3(d2), e2], 1)
-        #d4 = self.decoder4(d3)
-
         cat1 = torch.cat([r6, e4], 1)
         d1 = self.decoder1(cat1)
         cat2 = torch.cat([d1, e3], 1)
@@ -401,6 +386,46 @@ class ResidualLayer(nn.Module):
             return nn.ReLU(out + input)
         else:
             return out + input
+'''
+class ResNeXtLayer(nn.Module):
+    
+    # ResNeXt block based on the ResNeXt model proposed in Facebook AI's paper
+    # "Aggregated Residual Transformations for Deep Neural Networks"
+    
+
+    def __init__(self, in_channels, out_channels, stride, cardinality = 4, bottleneck_width, widen_factor = 1):
+        super(ResNeXtLayer, self).__init__()
+        
+        width_ratio = out_channels / (widen_factor * 64.0)
+        D = cardinality * int(base_width * width_ratio)
+
+        self.conv_reduce = nn.Conv2d(in_channels, D, kernel_size = (1, 1), stride = (1, 1), padding = 0, bias = False)
+        self.bn_reduce = nn.BatchNorm2d(D)
+        self.conv_conv = nn.Conv2d(D, D, kernel_size = (3, 3), stride = stride, padding = 1, groups = cardinality, bias = False)
+        self.bn = nn.BatchNorm2d(D)
+        self.conv_expand = nn.Conv2d(D, out_channels, kernel_size = (1, 1), stride = (1, 1), padding = 0, bias = False)
+        self.bn_expand = nn.BatchNorm2d(out_channels)
+
+        self.shortcut = nn.Sequential()
+
+        if in_channels != out_channels:
+            self.shortcut.add_module('shortcut_conv', 
+                nn.Conv2d(in_channels, out_channels, kernel_size = (1, 1), stride = stride, padding = 0, bias = False))
+            self.shortcut.add_module('shortcut_bn', nn.BatchNorm2d(out_channels))
+
+    def forward(self, x):
+        bottleneck = self.conv_reduce(x)
+        bottleneck = F.relu(self.bn_reduce(bottleneck), inplace = True)
+        bottleneck = self.conv_conv(bottleneck)
+        bottleneck = F.relu(self.bn(bottleneck), inplace = True)
+        bottleneck = self.conv_expand(bottleneck)
+        bottleneck = self.bn_expand(bottleneck)
+        
+        residual = self.shortcut(x)
+
+        return F.relu(residual + bottleneck, inplace = True)
+
+'''
 
 class GeneratorJohnson(nn.Module):
     """
