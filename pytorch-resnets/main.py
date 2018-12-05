@@ -144,8 +144,10 @@ if __name__ == "__main__":
             start_epoch = checkpoint['epoch'] + 1
             model.load_state(checkpoint['model_state'])
         if args.mode == 'test':
-            checkpoint = torch.load(args.pretrain_path)
-            model.load_state(checkpoint['model_state'])
+            #checkpoint = torch.load(args.pretrain_path)
+            model = torch.load(args.pretrain_path)
+            #model.eval()
+            #model.load_state(checkpoint['model_state'])
 
     model.set_start_epoch(start_epoch)
     model.to(device)
@@ -266,7 +268,9 @@ if __name__ == "__main__":
         # save model from last epoch
         model_file = os.path.join(out_dir, "epoch_%d.pt" % epoch)
         print("\nSaving model to %s\n" % (model_file))
-        torch.save({'epoch': epoch, 'model_state': model.save_state()}, model_file)
+        #torch.save({'epoch': epoch, 'model_state': model.save_state()}, model_file)
+        #torch.save({'model_state': model.save_state()}, model_file)
+        torch.save(model, model_file)
 
         training_end = time.time()
         print("TOTAL_TRAINING_TIME: ", (training_end - training_start))
