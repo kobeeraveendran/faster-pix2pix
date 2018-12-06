@@ -1,9 +1,6 @@
 # Pix2pix in Pytorch
 This project is based on [Image-to-Image Translation with Conditional Adversarial Networks](https://arxiv.org/pdf/1611.07004v1.pdf).
 
-<img src='imgs/generated.png'/>
-
-
 ## Prerequisites
 - Python 3.6.x
 - [PyTorch 0.4.x & torchvision](http://pytorch.org/)
@@ -45,9 +42,6 @@ python plot.py --dir ./checkpoints/xxx
 ```
 It will look for train.json in the directory and output plots as result.png.
 
-Loss:
-<img src='imgs/loss.png'/>
-
 ### See more options available
 ```bash
 python main.py -h
@@ -58,11 +52,3 @@ python main.py -h
 python main.py --mode test --pretrain_path ./checkpoints/xxx/xxx.pt
 ```
 This generates all images from test set and save them to ./checkpoints/xxx/images/test/.
-
-
-Mean Squared Error of generated images:
-<br/><br/>
-<img src='imgs/mse.png' width="300px"/>
-
-t-SNE plot of 5 random generated images from different models and ground truth:
-<img src='imgs/tsne.png' width="600px"/>
