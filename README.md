@@ -1,4 +1,4 @@
-# faster-pix2pix
+# faster-pix2pix (see `pytorch-resnets`)
 
 ## Baseline code and acknowledgements
 
