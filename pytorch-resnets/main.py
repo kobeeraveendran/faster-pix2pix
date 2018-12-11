@@ -9,6 +9,7 @@ from visdom import Visdom
 import numpy as np
 
 import torch
+from torchsummary import summary
 import dataloader
 from gan_model import GANModel
 
@@ -146,6 +147,7 @@ if __name__ == "__main__":
         if args.mode == 'test':
             #checkpoint = torch.load(args.pretrain_path)
             model = torch.load(args.pretrain_path)
+            #summary(model, (3, 256, 256))
             #model.eval()
             #model.load_state(checkpoint['model_state'])
 
@@ -164,6 +166,8 @@ if __name__ == "__main__":
         total_val_iter = eval_n
 
         training_start = time.time()
+
+        #summary(model, (3, 256, 256))
 
         for epoch in range(start_epoch, start_epoch + args.n_epoch):
             print("\n==== Epoch {:d} ====".format(epoch))
