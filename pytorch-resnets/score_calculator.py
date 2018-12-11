@@ -17,5 +17,7 @@ else:
 p2p_total = sum(p2p_list)
 uresnet9_total = sum(uresnet9_list)
 
-print('Pix2Pix total score: ' + str(p2p_total) + '/200; \tAverage per-image score: ' + str(int(round(p2p_total / 200 * 4))))
-print('UResNet9 total score: ' + str(uresnet9_total) + '/200; \tAverage per-image score: ' + str(int(round(uresnet9_total / 200 * 4))))
+print('Pix2Pix total score: ' + str(p2p_total) + '/200; \tAverage per-image score: ' + str(int(round(p2p_total / 200 * 4))), end = '')
+print('Maximum score: ' + str(max(p2p_list)) + '; Minimum score: ' + str(min(p2p_list)))
+print('UResNet9 total score: ' + str(uresnet9_total) + '/200; \tAverage per-image score: ' + str(int(round(uresnet9_total / 200 * 4))), end = '')
+print('Maximum score: ' + str(max(uresnet9_list)) + '; Minimum score: ' + str(min(uresnet9_list)))
