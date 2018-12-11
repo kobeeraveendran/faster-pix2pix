@@ -5,12 +5,12 @@ import os
 
 start_idx = int(input("start image id: "))
 end_idx = int(input("end image id: "))
-pix2pix_folder = input("unet(pix2pix) folder name: ")
-uresnet9_folder = input("uresnet9 folder name: ")
+pix2pix_dir = input("unet(pix2pix) test path: ")
+uresnet9_dir = input("uresnet9 test path: ")
 
 gt_dir = 'datasets/maps/testB'
-pix2pix_dir = 'checkpoints/' + pix2pix_folder + '/images/test'
-uresnet9_dir = 'checkpoints/' + uresnet9_folder + '/images/test'
+#pix2pix_dir = 'checkpoints/' + pix2pix_folder + '/images/test'
+#uresnet9_dir = 'checkpoints/' + uresnet9_folder + '/images/test'
 target_path = 'img_comparison'
 
 if target_path not in os.listdir():
